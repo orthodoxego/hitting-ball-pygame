@@ -5,8 +5,6 @@ from game_classes.hithitengine import HitHitEngine
 class Game:
     """Класс-шаблон для игр на базе pygame."""
 
-
-
     def __init__(self, width, height, caption, fps):
         """Конструктор, настройка основных параметров."""
         pygame.init()
@@ -59,8 +57,10 @@ class Game:
                         print("ВНИЗ")
 
             self.scene.fill(Setup.BLACK)
+
             self.__hit_engine.draw(pygame, self.scene)
             self.__hit_engine.act(self.__delta)
+
             pygame.display.flip()
 
             self.__delta = self.clock.tick(Setup.FPS)
