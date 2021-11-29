@@ -40,21 +40,9 @@ class Game:
     def run(self):
         """Главный цикл игры."""
         while (self.playGame):
-            # Проверяем нажатые клавиши
-            for event in pygame.event.get():
-                if (event.type == pygame.QUIT):
-                    self.playGame = False
-                elif (event.type == pygame.KEYDOWN):
-                    if (event.key == pygame.K_ESCAPE):
-                        self.playGame = False
-                    elif (event.key == pygame.K_LEFT):
-                        print("ВЛЕВО")
-                    elif (event.key == pygame.K_RIGHT):
-                        print("ВПРАВО")
-                    elif (event.key == pygame.K_UP):
-                        print("ВВЕРХ")
-                    elif (event.key == pygame.K_DOWN):
-                        print("ВНИЗ")
+
+            # Проверяем нажатые клавиши и события мыши
+            self.playGame = self.__hit_engine.check_keys(pygame.event.get())
 
             self.scene.fill(Setup.BLACK)
 

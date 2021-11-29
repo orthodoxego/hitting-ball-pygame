@@ -4,10 +4,16 @@ from setup.setup import Setup
 
 @dataclass
 class PlayerData:
+    # Координаты (ваш Кэп)
     x: int
     y: int
+
+    # Скин и прямоугольник для расчётов столкновения
     skin: pygame.image
     rect: pygame.rect
+
+    # Энергия для удара
+    energy_y: float = 0
 
 class Player:
 
@@ -32,5 +38,18 @@ class Player:
             x = Setup.screen_width - self.pd.rect.width
         self.pd.x = x
 
+    def inc_energy(self, delta):
+        self.pd.energy_y += (Setup.max_energy_player + self.pd.energy_y) * delta
+        if self.pd.energy_y > Setup.max_energy_player:
+            self.pd.energy_y = 0
+
+    def dec_energy(self, delta):
+        self.pd.energy_y -= Setup.max_energy_player * 50 * delta
+        if self.pd.energy_y < 0:
+            self.pd.energy_y = 0
+
+
     def draw(self, pygame: pygame, scene: pygame.display):
-        scene.blit(self.pd.skin, (self.pd.x, self.pd.y))
+        pd = self.pd
+        scene.blit(pd.skin, (pd.x, pd.y + int(pd.energy_y)))
+
