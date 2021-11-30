@@ -36,14 +36,17 @@ class Ball:
         self.__set_speed(delta)
 
         # Проверить соударения со стенами
-        self.__check_up_left_right()
+        self.__check_up_left_right(delta)
 
         # Установить прямоугольник для столкновений
         self.ball.rect.x, self.ball.rect.y = self.ball.x, self.ball.y
 
 
-    def __check_up_left_right(self):
+    def __check_up_left_right(self, delta):
         """Проверяет соударение и изменяет координаты и скорости."""
         if self.ball.y < 0:
             self.ball.y = 0
-            self.ball.speed_y = 100
+            self.ball.speed_y = Setup.FPS * 50 * delta
+
+
+

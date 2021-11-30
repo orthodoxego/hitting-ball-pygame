@@ -27,28 +27,37 @@ class HitHitEngine:
         # Движение шарика
         self.__ball.act(delta)
 
-        self.check_collision_player_and_ball(self.__player.player.rect, self.__ball.ball.rect)
+        self.check_collision_player_and_ball(self.__player.player.rect, self.__ball.ball.rect, delta)
 
         return result
 
-    def check_collision_player_and_ball(self, a, b):
+    def check_collision_player_and_ball(self, a, b, delta):
         """Проверяет столкновение мяча и площадки"""
-        last_y = self.__player.player.rect.y
-        self.__player.player.rect.y += self.__player.player.energy_y
+        
+        player = self.__player.player
+        ball = self.__ball.ball
+
+        last_y = player.rect.y
+        player.rect.y += player.energy_y
 
         if a.colliderect(b):
             if self.__controller.lkm_pressed:
-                self.__ball.ball.speed_y = -self.__ball.ball.speed_y * 0.75
+                """Если в этот момент левая кнопка нажата."""
+                ball.speed_y = -ball.speed_y * 0.75
             else:
-                self.__ball.ball.speed_y = -self.__ball.ball.speed_y * 0.75 + (self.__player.player.energy_y * Setup.multiple_energy) * -1
-                self.__ball.ball.y = self.__player.player.y - self.__ball.ball.rect.height
-                self.__player.player.energy_y = Setup.max_energy_player // 2
+                """Если в этот момент левая кнопка отпущена.
+                Добавляем ускорение от площадки"""
+                ball.speed_y = -ball.speed_y * 0.55 + (player.energy_y * Setup.multiple_energy) * -1
+                ball.y = player.y - ball.rect.height
+                if abs(ball.speed_y) > Setup.FPS * 0.5:
+                    player.energy_y = Setup.max_energy_player // 2
 
-        # Останавливает шар
-        if abs(self.__ball.ball.speed_y) < 1:
-            self.__ball.ball.speed_y = 0
+            center_p = player.x + player.rect.width // 2
+            center_b = ball.x + ball.rect.width // 2
 
-        self.__player.player.rect.y = last_y
+            ball.speed_x = (center_b - center_p) * Setup.angle_correction * delta
+                
+        player.rect.y = last_y
 
 
 
