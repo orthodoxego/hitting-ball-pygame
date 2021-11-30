@@ -5,7 +5,7 @@ from game_classes.hithitengine import HitHitEngine
 class Game:
     """Класс-шаблон для игр на базе pygame."""
 
-    def __init__(self, width, height, caption, fps):
+    def __init__(self, width, height, caption):
         """Конструктор, настройка основных параметров."""
         pygame.init()
 
@@ -27,6 +27,8 @@ class Game:
         self.playGame = True
         self.__delta = 0
 
+        # Игровой движок (модель)
+        # Она же создаёт и представление, и контроллер, и игровые объекты
         self.__hit_engine = HitHitEngine()
 
     @property
@@ -40,14 +42,10 @@ class Game:
     def run(self):
         """Главный цикл игры."""
         while (self.playGame):
-
-            # Проверяем нажатые клавиши и события мыши
-            self.playGame = self.__hit_engine.check_keys(pygame.event.get())
-
             self.scene.fill(Setup.BLACK)
 
             self.__hit_engine.draw(pygame, self.scene)
-            self.__hit_engine.act(self.__delta)
+            self.playGame = self.__hit_engine.act(pygame, self.__delta / 1000)
 
             pygame.display.flip()
 
@@ -57,6 +55,6 @@ class Game:
 
 
 if __name__ == "__main__":
-    game = Game(Setup.screen_width, Setup.screen_height, "Бах-бах-набиваем мяч", 60)
-    # game = Game(0, 0, "Бах-бах-набиваем мяч", 60)
+    game = Game(Setup.screen_width, Setup.screen_height, "Бах-бах-набиваем мяч")
+    # game = Game(0, 0, "Бах-бах-набиваем мяч")
     game.run()

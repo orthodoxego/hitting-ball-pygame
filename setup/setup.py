@@ -1,4 +1,3 @@
-import pygame
 class Setup:
 
     # ФПС
@@ -9,7 +8,7 @@ class Setup:
     screen_height = 768
 
     # Скорость движения площадки за мышью, по горизонтали
-    speed_player = FPS * 2
+    speed_player = 32
 
     # Максимальная энергия для отскока
     max_energy_player = 64
