@@ -1,9 +1,10 @@
 import pygame
 
-from game_classes.ball import Ball
 from setup.setup import Setup
 from game_classes.player import Player
 from game_classes.textures import Textures
+from game_classes.ball import Ball
+from game_classes.goldbox import GoldBox
 from view.view import View
 from controller.controller import Controller
 
@@ -21,13 +22,19 @@ class HitHitEngine:
         self.__ball = Ball(textures.ball)
         self.__view = View()
         self.__controller = Controller(self.__player)
+        self.__gold_boxes = []
+        self.__gold_boxes.append(GoldBox(Setup.screen_width, Setup.screen_height // 2, textures.goldbox, -128, 0))
 
         self.game = game
 
     def draw(self, scene: pygame.display):
         """Взаимодействие с View."""
+        for goldbox in self.__gold_boxes:
+            self.__view.goldbox_draw(scene, goldbox)
+
         self.__view.player_draw(scene, self.__player)
         self.__view.ball_draw(scene, self.__ball)
+
 
     def __is_ball_down_screen(self):
         """Шарик вылетел за нижнюю границу экрана. СТОП."""
@@ -85,6 +92,10 @@ class HitHitEngine:
 
         # Движение шарика .act()
         self.__ball.act(delta)
+
+        # Движение ящиков .act()
+        for goldbox in self.__gold_boxes:
+            goldbox.act(delta)
 
         # Проверяет соударение шара и площадки
         self.check_collision_player_and_ball(self.__player.player.rect, self.__ball.ball.rect, delta)

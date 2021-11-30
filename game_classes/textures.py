@@ -9,3 +9,6 @@ class Textures:
         # Текстура шара
         self.ball = pygame.image.load('png/ball.png')
 
+        # Текустура сундука
+        self.goldbox = pygame.image.load('png/goldbox.png')
+

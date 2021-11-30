@@ -8,3 +8,6 @@ class View:
 
     def ball_draw(self, scene, ball):
         scene.blit(ball.ball.skin, (ball.x, ball.y))
+
+    def goldbox_draw(self, scene, goldbox):
+        scene.blit(goldbox.texture, (goldbox.x, goldbox.y))
