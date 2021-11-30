@@ -2,9 +2,9 @@ import pygame
 
 class View:
 
-    def player_draw(self, scene, p):
-        scene.blit(p.player.skin, (p.player.x,
-                                   p.player.y + int(p.player.energy_y)))
+    def player_draw(self, scene, player):
+        scene.blit(player.player.skin, (player.x,
+                                   player.y + int(player.energy_y)))
 
-    def ball_draw(self, scene, b):
-        scene.blit(b.ball.skin, (b.ball.x, b.ball.y))
+    def ball_draw(self, scene, ball):
+        scene.blit(ball.ball.skin, (ball.x, ball.y))

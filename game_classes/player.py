@@ -5,9 +5,6 @@ from setup.setup import Setup
 
 @dataclass
 class PlayerData:
-    # Координаты (ваш Кэп)
-    x: int
-    y: int
 
     # Скин и прямоугольник для расчётов столкновения
     skin: pygame.image
@@ -26,7 +23,15 @@ class Player:
         x = (Setup.screen_width - rect.width) // 2
         y = Setup.screen_height - rect.height * 10
         rect.x, rect.y = x, y
-        self.player = PlayerData(x=x, y=y, skin=skin, rect=rect)
+        self.player = PlayerData(skin=skin, rect=rect)
+
+    @property
+    def energy_y(self):
+        return self.player.energy_y
+
+    @energy_y.setter
+    def energy_y(self, value):
+        self.player.energy_y = value
 
     @property
     def width(self):
@@ -36,8 +41,7 @@ class Player:
     @property
     def x(self):
         """Вернёт координату X игрока."""
-        self.player.rect.x = self.player.x
-        return self.player.x
+        return self.player.rect.x
 
     @x.setter
     def x(self, x):
@@ -46,20 +50,16 @@ class Player:
             x = 0
         if x > Setup.screen_width - self.player.rect.width:
             x = Setup.screen_width - self.player.rect.width
-        self.player.x = x
-        self.player.rect.x = self.player.x
-
+        self.player.rect.x = x
 
     @property
     def y(self):
         """Вернёт координату Y игрока."""
-        self.player.rect.y = self.player.y
-        return self.player.y
+        return self.player.rect.y
 
     @y.setter
     def y(self, y):
-        self.player.y = y
-        self.player.rect.y = self.player.y
+        self.player.rect.y = y
 
     def mouse_button1_pressed(self, delta):
         """ЛКМ удерживается."""
