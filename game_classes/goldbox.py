@@ -25,7 +25,7 @@ class GoldBox:
 
     @x.setter
     def x(self, value):
-        self.__rect.x = value
+        self.__rect.x = int(value)
 
     @property
     def y(self):
@@ -33,7 +33,7 @@ class GoldBox:
 
     @y.setter
     def y(self, value):
-        self.__rect.y = value
+        self.__rect.y = int(value)
 
     def act(self, delta):
         self.x += self.__speed_x * delta

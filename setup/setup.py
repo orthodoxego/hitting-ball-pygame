@@ -30,7 +30,7 @@ class Setup:
     max_energy_player = 32
 
     # Стартовое количество сундуков
-    start_count_boxes = 5
+    start_count_boxes = 2
 
     # Цвета
     BLACK = (0, 0, 0)
