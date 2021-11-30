@@ -44,7 +44,7 @@ class Game:
         while (self.playGame):
             self.scene.fill(Setup.BLACK)
 
-            self.__hit_engine.draw(pygame, self.scene)
+            self.__hit_engine.draw(self.scene)
             self.playGame = self.__hit_engine.act(pygame, self.__delta / 1000)
 
             pygame.display.flip()
