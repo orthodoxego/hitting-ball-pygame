@@ -40,22 +40,33 @@ class HitHitEngine:
         last_y = player.rect.y
         player.rect.y += player.energy_y
 
+        # В случае столкновения:
+        # Если ЛКМ нажата, то просто меняет вертикальную скорость
+        # Если нет, то увеличивает на величину enegry_y для игрока
         if a.colliderect(b):
             if self.__controller.lkm_pressed:
                 """Если в этот момент левая кнопка нажата."""
-                ball.speed_y = -ball.speed_y * 0.75
+                ball.speed_y = -ball.speed_y * Setup.correct_up
             else:
                 """Если в этот момент левая кнопка отпущена.
                 Добавляем ускорение от площадки"""
-                ball.speed_y = -ball.speed_y * 0.55 + (player.energy_y * Setup.multiple_energy) * -1
+                ball.speed_y = -ball.speed_y * Setup.correct_up + (player.energy_y * Setup.multiple_energy) * -1
                 ball.y = player.y - ball.rect.height
                 if abs(ball.speed_y) > Setup.FPS * 0.5:
                     player.energy_y = Setup.max_energy_player // 2
 
+            # Вычисляет смещение от центра площадки
             center_p = player.x + player.rect.width // 2
             center_b = ball.x + ball.rect.width // 2
 
-            ball.speed_x = (center_b - center_p) * Setup.angle_correction * delta
+            # Горизонтальная скорость в зависимости от смещения от центра
+            ball.speed_x = (ball.speed_x + (center_b - center_p) * Setup.angle_correction * delta) / 2
+
+            # Если шар провливается в площадку
+            if ball.rect.y + ball.rect.height > player.rect.y:
+                ball.rect.y = player.rect.y - ball.rect.height
+                ball.y = ball.rect.y
+                self.__ball.update_rect()
                 
         player.rect.y = last_y
 

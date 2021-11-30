@@ -9,17 +9,21 @@ class Setup:
 
     # Скорость движения площадки за мышью, по горизонтали
     speed_player = 32
+
     # Коррекция угла отбоя шара
-    angle_correction = 5
+    angle_correction = 15
 
     # Начальная скорость движения шара
     speed_ball_x = 0
     speed_ball_y = 0
-    ball_acceleration = 9.8 / 2
+    ball_acceleration = 9.8
+
+    # Гашение скорости при вертикальном отскоке
+    correct_up = 0.85
 
     # Модификатор ускорения в зависимости от энергии
     # Больше - больше энергии при отскоке
-    multiple_energy = 90.8
+    multiple_energy = 45
 
     # Максимальная энергия для отскока
     max_energy_player = 32

@@ -16,8 +16,8 @@ class Controller:
             self.player.mouse_button1_unpressed(delta)
 
         # Расчёт движения за курсором
-        if pygame.mouse.get_focused():
-            self.__check_mouse_cursor(pygame, delta)
+        # if pygame.mouse.get_focused():
+        self.__check_mouse_cursor(pygame, delta)
 
         # Проверяет события мыши и клавиатуры
         return self.__check_events(pygame, delta)

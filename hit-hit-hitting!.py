@@ -55,6 +55,6 @@ class Game:
 
 
 if __name__ == "__main__":
-    game = Game(Setup.screen_width, Setup.screen_height, "Бах-бах-набиваем мяч")
-    # game = Game(0, 0, "Бах-бах-набиваем мяч")
+    # game = Game(Setup.screen_width, Setup.screen_height, "Бах-бах-набиваем мяч")
+    game = Game(0, 0, "Бах-бах-набиваем мяч")
     game.run()
