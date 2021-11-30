@@ -8,7 +8,8 @@ class Setup:
     screen_height = 768
 
     # Скорость движения площадки за мышью, по горизонтали
-    speed_player = 32
+    # Выше значение = быстрей перемещение
+    speed_player = 64
 
     # Коррекция угла отбоя шара
     angle_correction = 15
@@ -27,6 +28,9 @@ class Setup:
 
     # Максимальная энергия для отскока
     max_energy_player = 32
+
+    # Стартовое количество сундуков
+    start_count_boxes = 5
 
     # Цвета
     BLACK = (0, 0, 0)
