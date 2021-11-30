@@ -23,6 +23,7 @@ class Controller:
         return self.__check_events(pygame, delta)
 
     def __check_events(self, pygame, delta):
+
         for event in pygame.event.get():
 
             if event.type == pygame.MOUSEBUTTONDOWN:

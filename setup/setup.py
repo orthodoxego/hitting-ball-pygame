@@ -19,11 +19,11 @@ class Setup:
     ball_acceleration = 9.8
 
     # Гашение скорости при вертикальном отскоке
-    correct_up = 0.85
+    correct_up = 0.8
 
     # Модификатор ускорения в зависимости от энергии
     # Больше - больше энергии при отскоке
-    multiple_energy = 45
+    multiple_energy = 100
 
     # Максимальная энергия для отскока
     max_energy_player = 32

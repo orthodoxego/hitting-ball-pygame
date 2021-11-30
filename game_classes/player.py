@@ -54,7 +54,7 @@ class Player:
     def y(self):
         """Вернёт координату Y игрока."""
         self.player.rect.y = self.player.y
-        return self.player.x
+        return self.player.y
 
     @y.setter
     def y(self, y):

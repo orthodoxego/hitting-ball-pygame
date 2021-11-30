@@ -9,31 +9,38 @@ from controller.controller import Controller
 
 class HitHitEngine:
 
-    def __init__(self):
+    def __init__(self, game):
         textures = Textures()
         self.__player = Player(textures.player)
         self.__ball = Ball(textures.ball)
         self.__view = View()
         self.__controller = Controller(self.__player)
 
+        self.game = game
+
     def draw(self, scene: pygame.display):
         self.__view.player_draw(scene, self.__player)
         self.__view.ball_draw(scene, self.__ball)
 
     def act(self, pygame, delta: float):
+        """Обработка данных в главном цикле."""
+
+        # Шарик вылетел за нижнюю границу экрана. СТОП.
+        if self.__ball.ball.rect.y > Setup.screen_height:
+            return False
+
         result = True
         result *= self.__controller.act(pygame, delta)
 
         # Движение шарика
         self.__ball.act(delta)
-
         self.check_collision_player_and_ball(self.__player.player.rect, self.__ball.ball.rect, delta)
 
         return result
 
     def check_collision_player_and_ball(self, a, b, delta):
         """Проверяет столкновение мяча и площадки"""
-        
+
         player = self.__player.player
         ball = self.__ball.ball
 
