@@ -54,13 +54,13 @@ class HitHitEngine:
         # Сначала вывод звёзд, т.к. они должны быть по фону, "ниже" всего остального
         self.__view.stars_draw(scene, self.__stars.stars)
 
-        # Вывод инопланетных кораблей
-        for nlo in self.__nlo_engine.nlo:
-            self.__view.nlo_draw(scene, nlo)
-
         # Площадка и шар
         self.__view.player_draw(scene, self.__player)
         self.__view.ball_draw(scene, self.__ball)
+
+        # Вывод инопланетных кораблей
+        for nlo in self.__nlo_engine.nlo:
+            self.__view.nlo_draw(scene, nlo)
 
         # Текстовые сообщения
         txt = self.__text.getStringIntText("Очки: ", self.__score.score, (255, 100, 100))
@@ -142,9 +142,14 @@ class HitHitEngine:
 
         # Движение НЛО .act()
         self.__nlo_engine.act(delta)
+        if self.__score.score > 0 and self.__score.score % Setup.adding_nlo == 0:
+            Setup.adding_nlo *= Setup.adding_nlo_multiply
+            self.__nlo_engine.count_nlo += 1
 
         # Проверка столкновения шара и НЛО
-        self.__nlo_engine.check_collision_ball_and_nlo(self.__ball, self.__score)
+        data = self.__nlo_engine.check_collision_ball_and_nlo(self.__ball)
+        self.__score += data["COUNT"]
+        self.run_collision_result(data)
 
         # Проверяет соударение шара и площадки
         self.check_collision_player_and_ball(self.__player.player.rect, self.__ball.ball.rect, delta)
@@ -153,6 +158,30 @@ class HitHitEngine:
         self.__stars.act(delta)
 
         return result
+
+    def run_collision_result(self, data):
+        """Обрабатывает словарь: в какое место ударил шар корабль."""
+        RIGHT = data["RIGHT"]
+        LEFT = data["LEFT"]
+        UP = data["UP"]
+        DOWN = data["DOWN"]
+
+        if RIGHT + LEFT + UP + DOWN == 0:
+            return False
+
+        if (RIGHT or LEFT) and not (UP or DOWN):
+            self.__ball.speed_x *= -2
+
+        elif (UP or DOWN) and not (RIGHT or LEFT):
+            self.__ball.speed_y *= -0.5
+
+        elif RIGHT or LEFT:
+            self.__ball.speed_x *= 0.5
+
+        elif UP or DOWN:
+            self.__ball.speed_y *= 0.5
+
+        return True
 
     def act(self, pygame, delta):
         result = True

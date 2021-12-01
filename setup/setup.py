@@ -29,8 +29,11 @@ class Setup:
     # Максимальная энергия для отскока
     max_energy_player = 32
 
-    # Стартовое количество НЛО
-    start_count_nlo = 3
+    # Каждые X очков добавляется ещё один корабль пришельцев
+    # Далее будет каждые adding_nlo * adding_nlo_multiply
+    start_count_nlo = 2
+    adding_nlo = 4
+    adding_nlo_multiply = 3
 
     # Количество звёзд по фону
     stars = 300

@@ -9,8 +9,16 @@ class NLOEngine:
 
     def __init__(self, texture_nlo):
         self.nlo = []
-        self.count_nlo = Setup.start_count_nlo
+        self.__count_nlo = Setup.start_count_nlo
         self.texture_nlo = texture_nlo
+
+    @property
+    def count_nlo(self):
+        return self.__count_nlo
+
+    @count_nlo.setter
+    def count_nlo(self, value):
+        self.__count_nlo = value
 
     def append_nlo(self):
         self.nlo.append(NLO(Setup.screen_width + randint(0, int(Setup.screen_width)),
@@ -22,7 +30,7 @@ class NLOEngine:
     def create_nlo(self):
         self.nlo.clear()
 
-        for i in range(self.count_nlo):
+        for i in range(self.__count_nlo):
             self.append_nlo()
 
     def act(self, delta):
@@ -33,14 +41,38 @@ class NLOEngine:
             if self.nlo[i].x + self.nlo[i].width < 0:
                 self.nlo.remove(self.nlo[i])
 
-        if len(self.nlo) == 0:
-            self.create_nlo()
+        if len(self.nlo) < self.__count_nlo:
+            self.append_nlo()
 
-    def check_collision_ball_and_nlo(self, ball, score: Score):
+
+
+    def check_collision_ball_and_nlo(self, ball):
         """Проверка столкновений шара и НЛО."""
-
+        count_collision = {"COUNT": 0, "RIGHT": False, "LEFT": False, "UP": False, "DOWN": False}
         for nlo in self.nlo:
             if ball.ball.rect.colliderect(nlo.rect):
-                score += 1
-                nlo.x = -nlo.width * 2
+                count_collision["COUNT"] += 1
+                count_collision.update(self.run_collision(nlo, ball.ball.rect))
+        return count_collision
 
+
+    def run_collision(self, a, b):
+        # Проверка столкновения: верх, низ, лево, право
+        ret = {"RIGHT": False, "LEFT": False, "UP": False, "DOWN": False}
+
+        # ПРАВО И ЛЕВО
+        if a.x > b.x + b.width:
+            ret["RIGHT"] = True
+        elif a.x < b.x:
+            ret["LEFT"] = True
+
+        # ВЕРХ И НИЗ
+        if a.y > b.y - a.height:
+            ret["UP"] = True
+        elif a.y < b.y:
+            ret["DOWN"] = True
+
+        # Убрать НЛО за левую границу экрана, чтобы удалилась
+        a.x = -a.width * 2
+
+        return ret

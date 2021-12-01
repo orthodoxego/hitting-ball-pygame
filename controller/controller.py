@@ -80,9 +80,9 @@ class Controller:
         x = pygame.mouse.get_pos()[0]
         y = pygame.mouse.get_pos()[1]
 
-        if x < self.player.x:
-            self.player.move_left(delta, x)
-        if x > self.player.x + self.player.width:
-            self.player.move_right(delta, x)
+        if x < self.player.x + self.player.width // 2:
+            self.player.move_left(delta, x - self.player.width // 2)
+        if x > self.player.x + self.player.width // 2:
+            self.player.move_right(delta, x + self.player.width // 2)
 
         return True
