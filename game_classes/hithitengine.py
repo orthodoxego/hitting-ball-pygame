@@ -154,6 +154,7 @@ class HitHitEngine:
             self.__ball.count_drop_ball = 0
             self.__score_text = self.__getScoreText()
 
+
     def __runAct(self, pygame, delta):
 
         """Обработка данных в главном цикле."""
@@ -161,7 +162,7 @@ class HitHitEngine:
 
         # Каждый Setup.FPS кадр проверяем (раз в секунду), сколько раз упал шар
         # за пределы экрана и вычитаем по 10 очков за каждое падение
-        if self.current_frame % Setup.FPS == 0:
+        if self.current_frame % (Setup.FPS // 2) == 0:
             self.check_minus_score()
 
         # Движение шарика .act()
@@ -184,8 +185,6 @@ class HitHitEngine:
         if (data["COUNT"] > 0):
             self.__score_text = self.__getScoreText()
 
-
-
         self.run_collision_result(data)
 
         # Проверяет соударение шара и площадки
@@ -206,17 +205,17 @@ class HitHitEngine:
         if RIGHT + LEFT + UP + DOWN == 0:
             return False
 
-        if (RIGHT or LEFT) and not (UP or DOWN):
-            self.__ball.speed_x *= -2
-
-        elif (UP or DOWN) and not (RIGHT or LEFT):
-            self.__ball.speed_y *= -0.5
-
-        elif RIGHT or LEFT:
-            self.__ball.speed_x *= 0.5
-
-        elif UP or DOWN:
-            self.__ball.speed_y *= 0.5
+        if DOWN:
+            if RIGHT:
+                self.__ball.speed_y *= -0.75
+            elif LEFT:
+                self.__ball.speed_x *= -0.5
+        elif UP:
+            self.__ball.speed_x *= -1
+            if LEFT:
+                self.__ball.speed_y *= -0.75
+            elif RIGHT:
+                self.__ball.speed_y *= 0.8
 
         return True
 

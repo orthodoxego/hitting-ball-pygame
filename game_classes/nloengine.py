@@ -52,7 +52,7 @@ class NLOEngine:
         for nlo in self.nlo:
             if ball.ball.rect.colliderect(nlo.rect):
                 count_collision["COUNT"] += 1
-                count_collision.update(self.run_collision(nlo, ball.ball.rect))
+                count_collision.update(self.run_collision(nlo, ball.ball))
         return count_collision
 
 
@@ -60,16 +60,24 @@ class NLOEngine:
         # Проверка столкновения: верх, низ, лево, право
         ret = {"RIGHT": False, "LEFT": False, "UP": False, "DOWN": False}
 
-        # ПРАВО И ЛЕВО
-        if a.x > b.x + b.width:
+        lX_ball = b.x
+        rX_ball = b.x + b.rect.width
+        uY_ball = b.y
+        dY_ball = b.y + b.rect.height
+
+        lX_NLO = a.x
+        rX_NLO = a.x + a.width
+        uY_NLO = a.y
+        dY_NLO = a.y + a.height
+
+        if rX_ball >= lX_NLO and b.speed_x > 0:
             ret["RIGHT"] = True
-        elif a.x < b.x:
+        elif rX_ball >= lX_NLO and b.speed_x <= 0:
             ret["LEFT"] = True
 
-        # ВЕРХ И НИЗ
-        if a.y > b.y - a.height:
+        if dY_ball > uY_NLO and b.speed_y > 0:
             ret["UP"] = True
-        elif a.y < b.y:
+        elif dY_ball > uY_NLO and b.speed_y <= 0:
             ret["DOWN"] = True
 
         # Убрать НЛО за левую границу экрана, чтобы удалилась

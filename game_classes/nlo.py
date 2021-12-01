@@ -50,6 +50,14 @@ class NLO:
     def y(self, value):
         self.__y = value
 
+    @property
+    def speed_x(self):
+        return self.__speed_x
+
+    @property
+    def speed_y(self):
+        return self.__speed_y
+
     def act(self, delta):
         self.x += self.__speed_x * delta
         self.y += self.__speed_y * delta

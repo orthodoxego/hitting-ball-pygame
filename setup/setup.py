@@ -12,7 +12,7 @@ class Setup:
     speed_player = 64
 
     # Коррекция угла отбоя шара
-    angle_correction = 200
+    angle_correction = 360
 
     # Начальная скорость движения шара
     speed_ball_x = 0
