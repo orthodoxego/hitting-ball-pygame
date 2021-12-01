@@ -4,6 +4,11 @@ from setup.setup import Setup
 
 @dataclass
 class BallData:
+    """x и y выделены для повышения точности расчётов,
+    т.к. координаты в rect только целочисленные."""
+    x: float
+    y: float
+
     speed_x: float
     speed_y: float
 
@@ -13,11 +18,12 @@ class BallData:
 class Ball:
 
     def __init__(self, skin):
+        """Определяет позицию шара на экране."""
         rect = skin.get_rect(bottomright=(skin.get_width(), skin.get_height()))
         x = (Setup.screen_width - rect.width) // 2
         y = (Setup.screen_height - rect.width) // 2
         rect.x, rect.y = x, y
-        self.ball = BallData(skin=skin, rect=rect, speed_x=Setup.speed_ball_x, speed_y=Setup.speed_ball_y)
+        self.ball = BallData(x=x, y=y, skin=skin, rect=rect, speed_x=Setup.speed_ball_x, speed_y=Setup.speed_ball_y)
 
     @property
     def speed_y(self):
@@ -49,8 +55,8 @@ class Ball:
 
     @x.setter
     def x(self, value):
-        self.ball.rect.x = value
-        return
+        self.ball.rect.x = int(value)
+        self.ball.x = value
 
     @property
     def y(self):
@@ -58,12 +64,12 @@ class Ball:
 
     @y.setter
     def y(self, value):
-        self.ball.rect.y = value
-        return
+        self.ball.rect.y = int(value)
+        self.ball.y = value
 
     def __change_speed(self, delta):
         """Изменение скорости по X и Y."""
-        self.x += self.ball.speed_x
+        self.x += self.ball.speed_x * delta
         self.ball.speed_y += Setup.ball_acceleration
         self.y += self.ball.speed_y * delta
 
@@ -75,7 +81,7 @@ class Ball:
 
     def collision_up(self, delta):
         self.y = 0
-        self.ball.speed_y = Setup.FPS * 50 * delta
+        self.ball.speed_y = Setup.FPS * 1.2 * delta
 
     def __check_up_left_right(self, delta):
         """Проверяет соударение с границами экрана

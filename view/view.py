@@ -9,5 +9,17 @@ class View:
     def ball_draw(self, scene, ball):
         scene.blit(ball.ball.skin, (ball.x, ball.y))
 
-    def goldbox_draw(self, scene, goldbox):
-        scene.blit(goldbox.texture, (goldbox.x, goldbox.y))
+    def nlo_draw(self, scene, nlo):
+        scene.blit(nlo.texture, (nlo.x, nlo.y))
+
+    def text_draw(self, scene, surface, x, y):
+        scene.blit(surface, (x, y))
+
+    def stars_draw(self, scene, stars):
+        for star in stars:
+            pygame.draw.circle(scene,
+                               star[4],
+                               (star[0], star[1]),
+                               1,
+                               1)
+

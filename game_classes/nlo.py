@@ -1,11 +1,17 @@
 import pygame
 
-class GoldBox:
+class NLO:
     def __init__(self, x, y, texture, speed_x, speed_y):
         self.__speed_x = speed_x
         self.__speed_y = speed_y
         self.__texture = texture
+        self.__x = x
+        self.__y = y
         self.__rect = pygame.Rect((x, y, texture.get_width(), texture.get_height()))
+
+    @property
+    def rect(self):
+        return self.__rect
 
     @property
     def texture(self):
@@ -21,11 +27,12 @@ class GoldBox:
 
     @property
     def x(self):
-        return self.__rect.x
+        return self.__x
 
     @x.setter
     def x(self, value):
         self.__rect.x = int(value)
+        self.__x = value
 
     @property
     def y(self):
@@ -34,6 +41,7 @@ class GoldBox:
     @y.setter
     def y(self, value):
         self.__rect.y = int(value)
+        self.__y = value
 
     def act(self, delta):
         self.x += self.__speed_x * delta

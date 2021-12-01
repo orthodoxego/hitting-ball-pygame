@@ -12,7 +12,7 @@ class Setup:
     speed_player = 64
 
     # Коррекция угла отбоя шара
-    angle_correction = 15
+    angle_correction = 200
 
     # Начальная скорость движения шара
     speed_ball_x = 0
@@ -29,8 +29,11 @@ class Setup:
     # Максимальная энергия для отскока
     max_energy_player = 32
 
-    # Стартовое количество сундуков
-    start_count_boxes = 2
+    # Стартовое количество НЛО
+    start_count_nlo = 3
+
+    # Количество звёзд по фону
+    stars = 300
 
     # Цвета
     BLACK = (0, 0, 0)
