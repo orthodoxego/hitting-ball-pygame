@@ -12,18 +12,19 @@ class BallData:
     speed_x: float
     speed_y: float
 
-    skin: pygame.image
+    texture: pygame.image
+    ghost_texture: pygame.image
     rect: pygame.rect
 
 class Ball:
 
-    def __init__(self, skin):
+    def __init__(self, texture, ghost_texture):
         """Определяет позицию шара на экране."""
-        rect = skin.get_rect(bottomright=(skin.get_width(), skin.get_height()))
+        rect = texture.get_rect(bottomright=(texture.get_width(), texture.get_height()))
         x = (Setup.screen_width - rect.width) // 2
         y = (Setup.screen_height - rect.height) // 2
         rect.x, rect.y = x, y
-        self.ball = BallData(x=x, y=y, skin=skin, rect=rect, speed_x=Setup.speed_ball_x, speed_y=Setup.speed_ball_y)
+        self.ball = BallData(x=x, y=y, texture=texture, ghost_texture=ghost_texture, rect=rect, speed_x=Setup.speed_ball_x, speed_y=Setup.speed_ball_y)
 
         # Сколько раз шар вывалился за нижнюю границу экрана
         self.__count_drop_ball = 0
@@ -109,8 +110,8 @@ class Ball:
         """Проверяет соударение с границами экрана
         и изменяет координаты и скорость."""
 
-        # Столкновение с препятствием сверху
-        if self.y < 0:
+        # Столкновение с верхней границей + 100% высоты
+        if self.y < -Setup.screen_height:
             self.collision_up(delta)
 
         # Правая граница

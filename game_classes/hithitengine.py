@@ -1,8 +1,9 @@
 import pygame
 
 from background.Stars import Stars
+from effects.TextEffect import TextEffect
 from setup.setup import Setup
-from font.text import Text
+from font.fontsurface import FontSurface
 from view.view import View
 from controller.controller import Controller
 from game_classes.player import Player
@@ -25,10 +26,10 @@ class HitHitEngine:
         -- контроллер."""
         textures = Textures()
         self.__player = Player(textures.player)
-        self.__ball = Ball(textures.ball)
+        self.__ball = Ball(textures.ball, textures.ghost_ball)
         self.__view = View()
         self.__score = Score()
-        self.__text = Text()
+        self.__text = FontSurface()
         self.__stars = Stars(Setup.stars, Setup.screen_width, Setup.screen_height)
         self.__controller = Controller(self.__player)
         self.__nlo = []
@@ -37,8 +38,13 @@ class HitHitEngine:
 
         self.game = game
         self.current_frame = 0
-        self.__max_frame = Setup.FPS * 50
+        self.__max_frame = Setup.FPS * 10000
         self.__pause = False
+
+        self.__score_text = self.__getScoreText()
+        self.__record_text = self.__getRecordText()
+        self.__pause_text = None
+        self.__help_text = TextEffect("Для ускорения шара отбейте его площадкой (зажмите ЛКМ). P - Пауза")
 
     @property
     def pause(self):
@@ -63,22 +69,42 @@ class HitHitEngine:
             self.__view.nlo_draw(scene, nlo)
 
         # Текстовые сообщения
-        txt = self.__text.getStringIntText("Очки: ", self.__score.score, (255, 100, 100))
+        txt = self.__text.getSurfaceText(self.__score_text.text, (255, 100, 100))
         self.__view.text_draw(scene, txt, 20, 20)
 
-        txt = self.__text.getStringIntText("Рекорд: ", self.__score.max_score, (255, 100, 100))
+        txt = self.__text.getSurfaceText(self.__record_text.text, (255, 100, 100))
         self.__view.text_draw(scene, txt, Setup.screen_width - txt.get_width() * 1.2, 20)
 
         if self.__controller.pause:
-            txt = self.__text.getStringIntText("ПАУЗА", "", (100, 200, 200))
+            if self.__pause_text == None:
+                self.__pause_text = self.__getPauseText()
+
+            txt = self.__text.getSurfaceText(self.__pause_text.text, (100, 200, 200))
             self.__view.text_draw(scene, txt, (Setup.screen_width - txt.get_width()) // 2, 20)
+        else:
+            self.__pause_text = None
 
         if self.current_frame < Setup.FPS * 10:
-            self.__view.text_draw(scene, self.__text.help_surface_text, self.__text.help_surface_text.get_height(), Setup.screen_height - self.__text.help_surface_text.get_height() * 1.5)
+            txt = self.__text.getHelpSurfaceText(self.__help_text.text, (100, 200, 200))
+            self.__view.text_draw(scene, txt , self.__text.help_surface_text.get_height(), Setup.screen_height - self.__text.help_surface_text.get_height() * 1.5)
+            if self.current_frame % (Setup.FPS // 10) == 0:
+                self.__help_text.tick()
 
         self.current_frame += 1
+
+        if self.current_frame % (Setup.FPS // 10) == 0:
+            self.__set_next_symbol_on_text()
+
         if self.current_frame > self.__max_frame:
             self.current_frame = Setup.FPS * 10
+
+    def __set_next_symbol_on_text(self):
+        self.__help_text.tick()
+        self.__record_text.tick()
+        self.__score_text.tick()
+        if self.__controller.pause:
+            self.__pause_text.tick()
+
 
     def check_collision_player_and_ball(self, a, b, delta):
         """Проверяет столкновение мяча и площадки"""
@@ -126,6 +152,7 @@ class HitHitEngine:
         if self.__ball.count_drop_ball > 0:
             self.__score -= self.__ball.count_drop_ball * 10
             self.__ball.count_drop_ball = 0
+            self.__score_text = self.__getScoreText()
 
     def __runAct(self, pygame, delta):
 
@@ -148,7 +175,17 @@ class HitHitEngine:
 
         # Проверка столкновения шара и НЛО
         data = self.__nlo_engine.check_collision_ball_and_nlo(self.__ball)
-        self.__score += data["COUNT"]
+        if self.__score.score + data["COUNT"] > self.__score.max_score:
+            self.__score += data["COUNT"]
+            self.__record_text = self.__getRecordText()
+        else:
+            self.__score += data["COUNT"]
+
+        if (data["COUNT"] > 0):
+            self.__score_text = self.__getScoreText()
+
+
+
         self.run_collision_result(data)
 
         # Проверяет соударение шара и площадки
@@ -193,4 +230,12 @@ class HitHitEngine:
 
         return result
 
+    def __getScoreText(self):
+        return TextEffect(f"Очки: {self.__score.score}")
+
+    def __getRecordText(self):
+        return TextEffect(f"Рекорд: {self.__score.max_score}")
+
+    def __getPauseText(self):
+        return TextEffect("ПАУЗА")
 

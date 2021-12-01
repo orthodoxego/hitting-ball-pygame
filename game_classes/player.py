@@ -7,7 +7,7 @@ from setup.setup import Setup
 class PlayerData:
 
     # Скин и прямоугольник для расчётов столкновения
-    skin: pygame.image
+    texture: pygame.image
     rect: pygame.rect
 
     # Энергия для удара
@@ -17,13 +17,13 @@ class PlayerData:
 class Player:
     """Математическая модель игрока. Инкапсулированы действия над моделью."""
 
-    def __init__(self, skin: pygame.image):
+    def __init__(self, texture: pygame.image):
         """Определение координат по центру."""
-        rect = skin.get_rect(bottomright=(skin.get_width(), skin.get_height()))
+        rect = texture.get_rect(bottomright=(texture.get_width(), texture.get_height()))
         x = (Setup.screen_width - rect.width) // 2
         y = Setup.screen_height - rect.height * 10
         rect.x, rect.y = x, y
-        self.player = PlayerData(skin=skin, rect=rect)
+        self.player = PlayerData(texture=texture, rect=rect)
 
     @property
     def energy_y(self):
