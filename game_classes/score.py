@@ -4,22 +4,19 @@ class Score:
         self.__score = 0
         self.__max_score = self.getMaxScoreFromFile()
 
-    def __str__(self):
-        return str(self.__score)
-
     @property
     def max_score(self):
         return self.__max_score
 
     @property
     def score(self):
+        if self.__score < 0:
+            self.__score = 0
         return self.__score
 
     @score.setter
     def score(self, value):
         self.__score = value
-        if self.__score < 0:
-            self.__score = 0
 
     def __iadd__(self, other):
         if isinstance(other, int):
@@ -27,12 +24,13 @@ class Score:
             if self.__score > self.__max_score:
                 self.__max_score = self.__score
                 self.writeToFileMaxScore()
-            return self.__score
+            return self
         return NotImplemented
 
     def __isub__(self, other):
         if isinstance(other, int):
-            return self.__score - other
+            self.__score -= other
+            return self
         return NotImplemented
 
     def getMaxScoreFromFile(self):

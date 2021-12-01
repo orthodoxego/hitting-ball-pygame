@@ -1,7 +1,7 @@
 import pygame
 from random import randint
 
-from game_classes.Score import Score
+from game_classes.score import Score
 from setup.setup import Setup
 from game_classes.nlo import NLO
 
@@ -37,10 +37,10 @@ class NLOEngine:
             self.create_nlo()
 
     def check_collision_ball_and_nlo(self, ball, score: Score):
-        """Проверка столкновений шара и ящиков."""
+        """Проверка столкновений шара и НЛО."""
 
         for nlo in self.nlo:
             if ball.ball.rect.colliderect(nlo.rect):
                 score += 1
-                nlo.x = -nlo.width
+                nlo.x = -nlo.width * 2
 

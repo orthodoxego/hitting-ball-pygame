@@ -7,11 +7,20 @@ class NLO:
         self.__texture = texture
         self.__x = x
         self.__y = y
-        self.__rect = pygame.Rect((x, y, texture.get_width(), texture.get_height()))
+        self.__width = texture.get_width()
+        self.__height = texture.get_height()
+        self.__rect = pygame.Rect((0, 0, 0, 0))
+
+    def __getRect(self):
+        self.__rect.x = int(self.x + self.width * 0.25)
+        self.__rect.y = int(self.y + self.height * 0.25)
+        self.__rect.width = int(self.__width * 0.5)
+        self.__rect.height = int(self.__height * 0.5)
+        return self.__rect
 
     @property
     def rect(self):
-        return self.__rect
+        return self.__getRect()
 
     @property
     def texture(self):
@@ -31,18 +40,17 @@ class NLO:
 
     @x.setter
     def x(self, value):
-        self.__rect.x = int(value)
         self.__x = value
 
     @property
     def y(self):
-        return self.__rect.y
+        return self.__y
 
     @y.setter
     def y(self, value):
-        self.__rect.y = int(value)
         self.__y = value
 
     def act(self, delta):
         self.x += self.__speed_x * delta
         self.y += self.__speed_y * delta
+        self.__rect = self.__getRect()

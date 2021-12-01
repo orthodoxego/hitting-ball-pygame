@@ -5,6 +5,19 @@ class Controller:
     def __init__(self, player):
         self.player = player
         self.lkm_pressed = False
+        self.__pause = False
+
+    @property
+    def pause(self):
+        return self.__pause
+
+    @pause.setter
+    def pause(self, value):
+        self.__pause = value
+
+    def __invertPause(self):
+        self.lkm_pressed = False
+        self.__pause = not self.__pause
 
     def act(self, pygame, delta):
 
@@ -27,7 +40,7 @@ class Controller:
         for event in pygame.event.get():
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
+                if event.button == 1 and not self.pause:
                     self.lkm_pressed = True
                 return True
 
@@ -52,12 +65,18 @@ class Controller:
                     print("ВВЕРХ")
                 elif event.key == pygame.K_DOWN:
                     print("ВНИЗ")
+                elif event.key == pygame.K_p or event.key == pygame.K_PAUSE:
+                    self.__invertPause()
 
         return True
 
     def __check_mouse_cursor(self, pygame, delta):
         """Проверяет и вызывает интерфейс для изменения координат площадки
         игрока в зависимости от положения курсора мыши."""
+
+        if self.pause:
+            return False
+
         x = pygame.mouse.get_pos()[0]
         y = pygame.mouse.get_pos()[1]
 
@@ -65,3 +84,5 @@ class Controller:
             self.player.move_left(delta, x)
         if x > self.player.x + self.player.width:
             self.player.move_right(delta, x)
+
+        return True

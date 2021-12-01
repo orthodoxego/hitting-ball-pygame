@@ -21,9 +21,31 @@ class Ball:
         """Определяет позицию шара на экране."""
         rect = skin.get_rect(bottomright=(skin.get_width(), skin.get_height()))
         x = (Setup.screen_width - rect.width) // 2
-        y = (Setup.screen_height - rect.width) // 2
+        y = (Setup.screen_height - rect.height) // 2
         rect.x, rect.y = x, y
         self.ball = BallData(x=x, y=y, skin=skin, rect=rect, speed_x=Setup.speed_ball_x, speed_y=Setup.speed_ball_y)
+
+        # Сколько раз шар вывалился за нижнюю границу экрана
+        self.__count_drop_ball = 0
+
+    @property
+    def count_drop_ball(self):
+        return self.__count_drop_ball
+
+    @count_drop_ball.setter
+    def count_drop_ball(self, value):
+        self.__count_drop_ball = value
+
+    def incDropBall(self):
+        self.__count_drop_ball += 1
+
+    def __reset_ball(self):
+        self.ball.x = (Setup.screen_width - self.width) // 2
+        self.ball.y = self.height
+        self.ball.speed_x = Setup.speed_ball_x
+        self.ball.speed_y = Setup.speed_ball_y
+        self.ball.rect.x = self.ball.x
+        self.ball.rect.y = self.ball.y
 
     @property
     def speed_y(self):
@@ -77,13 +99,13 @@ class Ball:
         # Прирастить скорость
         self.__change_speed(delta)
         # Проверить соударения со стенами
-        self.__check_up_left_right(delta)
+        self.__check_up_down_left_right(delta)
 
     def collision_up(self, delta):
         self.y = 0
         self.ball.speed_y = Setup.FPS * 1.2 * delta
 
-    def __check_up_left_right(self, delta):
+    def __check_up_down_left_right(self, delta):
         """Проверяет соударение с границами экрана
         и изменяет координаты и скорость."""
 
@@ -100,6 +122,12 @@ class Ball:
         if self.x < 0:
             self.ball.speed_x = -self.ball.speed_x * 0.98
             self.x = 0
+
+        # Если выходит за нижнюю границу сцены + 100%
+        if self.y > Setup.screen_height * 2:
+            # Увеличить количество "выпадений" за границу экрана
+            self.incDropBall()
+            self.__reset_ball()
 
 
 

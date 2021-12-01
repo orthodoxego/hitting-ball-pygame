@@ -8,7 +8,7 @@ from controller.controller import Controller
 from game_classes.player import Player
 from game_classes.textures import Textures
 from game_classes.ball import Ball
-from game_classes.Score import Score
+from game_classes.score import Score
 from game_classes.nloengine import NLOEngine
 
 class HitHitEngine:
@@ -38,6 +38,15 @@ class HitHitEngine:
         self.game = game
         self.current_frame = 0
         self.__max_frame = Setup.FPS * 50
+        self.__pause = False
+
+    @property
+    def pause(self):
+        return self.__pause
+
+    @pause.setter
+    def pause(self, value):
+        self.__pause = value
 
     def draw(self, scene: pygame.display):
         """Взаимодействие с View."""
@@ -54,10 +63,15 @@ class HitHitEngine:
         self.__view.ball_draw(scene, self.__ball)
 
         # Текстовые сообщения
-        txt = self.__text.getStringIntText("Очки: ", self.__score, (255, 100, 100))
+        txt = self.__text.getStringIntText("Очки: ", self.__score.score, (255, 100, 100))
         self.__view.text_draw(scene, txt, 20, 20)
+
         txt = self.__text.getStringIntText("Рекорд: ", self.__score.max_score, (255, 100, 100))
         self.__view.text_draw(scene, txt, Setup.screen_width - txt.get_width() * 1.2, 20)
+
+        if self.__controller.pause:
+            txt = self.__text.getStringIntText("ПАУЗА", "", (100, 200, 200))
+            self.__view.text_draw(scene, txt, (Setup.screen_width - txt.get_width()) // 2, 20)
 
         if self.current_frame < Setup.FPS * 10:
             self.__view.text_draw(scene, self.__text.help_surface_text, self.__text.help_surface_text.get_height(), Setup.screen_height - self.__text.help_surface_text.get_height() * 1.5)
@@ -65,13 +79,6 @@ class HitHitEngine:
         self.current_frame += 1
         if self.current_frame > self.__max_frame:
             self.current_frame = Setup.FPS * 10
-
-
-    def __is_ball_down_screen(self):
-        """Шарик вылетел за нижнюю границу экрана. СТОП."""
-        if self.__ball.ball.rect.y > Setup.screen_height:
-            return False
-        return True
 
     def check_collision_player_and_ball(self, a, b, delta):
         """Проверяет столкновение мяча и площадки"""
@@ -108,30 +115,35 @@ class HitHitEngine:
             # Горизонтальная скорость без зависимости от смещения от центра
             ball.speed_x = (center_b - center_p) * Setup.angle_correction * delta
 
-
-            # Если шар проваливается в площадку
+            # Если шар "проваливается" в площадку
             if ball.y + ball.height > player.y:
                 ball.y = player.y - ball.height
 
                 
         player.y = last_y
 
-    def act(self, pygame, delta: float):
+    def check_minus_score(self):
+        if self.__ball.count_drop_ball > 0:
+            self.__score -= self.__ball.count_drop_ball * 10
+            self.__ball.count_drop_ball = 0
+
+    def __runAct(self, pygame, delta):
+
         """Обработка данных в главном цикле."""
         result = True
-        # Проверяет, вылетел ли шар вниз
-        # result *= self.__is_ball_down_screen()
 
-        # Обработка ввода
-        result *= self.__controller.act(pygame, delta)
+        # Каждый Setup.FPS кадр проверяем (раз в секунду), сколько раз упал шар
+        # за пределы экрана и вычитаем по 10 очков за каждое падение
+        if self.current_frame % Setup.FPS == 0:
+            self.check_minus_score()
 
         # Движение шарика .act()
         self.__ball.act(delta)
 
-        # Движение ящиков .act()
+        # Движение НЛО .act()
         self.__nlo_engine.act(delta)
 
-        # Проверка столкновения шара и ящиков
+        # Проверка столкновения шара и НЛО
         self.__nlo_engine.check_collision_ball_and_nlo(self.__ball, self.__score)
 
         # Проверяет соударение шара и площадки
@@ -142,5 +154,14 @@ class HitHitEngine:
 
         return result
 
+    def act(self, pygame, delta):
+        result = True
+        if not self.__controller.pause:
+            result = self.__runAct(pygame, delta)
+
+        # Обработка ввода
+        result *= self.__controller.act(pygame, delta)
+
+        return result
 
 
