@@ -26,3 +26,6 @@ class View:
                                1,
                                1)
 
+    def expl_draw(self, scene, x, y, texture):
+        scene.blit(texture, (x, y))
+

@@ -1,16 +1,23 @@
 import pygame
 from random import randint
 
+from game_classes.explosion import Explosion
 from game_classes.score import Score
 from setup.setup import Setup
 from game_classes.nlo import NLO
 
 class NLOEngine:
 
-    def __init__(self, texture_nlo):
+    def __init__(self, texture_nlo, textureExplosion):
         self.nlo = []
         self.__count_nlo = Setup.start_count_nlo
         self.texture_nlo = texture_nlo
+        self.__textureExplosion = textureExplosion
+        self.__explosions = []
+
+    @property
+    def explosions(self):
+        return self.__explosions
 
     @property
     def count_nlo(self):
@@ -37,6 +44,13 @@ class NLOEngine:
         for nlo in self.nlo:
             nlo.act(delta)
 
+
+
+        for expl in self.__explosions:
+            expl.incFrame(delta * 15)
+            if not expl.enabled:
+                self.__explosions.remove(expl)
+
         for i in range(len(self.nlo) - 1, -1, -1):
             if self.nlo[i].x + self.nlo[i].width < 0:
                 self.nlo.remove(self.nlo[i])
@@ -44,13 +58,12 @@ class NLOEngine:
         if len(self.nlo) < self.__count_nlo:
             self.append_nlo()
 
-
-
     def check_collision_ball_and_nlo(self, ball):
         """Проверка столкновений шара и НЛО."""
         count_collision = {"COUNT": 0, "RIGHT": False, "LEFT": False, "UP": False, "DOWN": False}
         for nlo in self.nlo:
             if ball.ball.rect.colliderect(nlo.rect):
+                self.__explosions.append(Explosion(nlo.x, nlo.y, self.__textureExplosion))
                 count_collision["COUNT"] += 1
                 count_collision.update(self.run_collision(nlo, ball.ball))
         return count_collision
@@ -60,25 +73,30 @@ class NLOEngine:
         # Проверка столкновения: верх, низ, лево, право
         ret = {"RIGHT": False, "LEFT": False, "UP": False, "DOWN": False}
 
-        lX_ball = b.x
-        rX_ball = b.x + b.rect.width
-        uY_ball = b.y
-        dY_ball = b.y + b.rect.height
+        lX_ball = b.x                   # Левая граница шара
+        rX_ball = b.x + b.rect.width    # Правая граница шара
+        uY_ball = b.y                   # Верхняя граница шара
+        dY_ball = b.y + b.rect.height   # Нижняя граница шара
 
-        lX_NLO = a.x
-        rX_NLO = a.x + a.width
-        uY_NLO = a.y
-        dY_NLO = a.y + a.height
+        lX_NLO = a.x                    # Левая граница НЛО
+        rX_NLO = a.x + a.width          # Правая граница НЛО
+        uY_NLO = a.y                    # Верхняя граница НЛО
+        dY_NLO = a.y + a.height         # Нижняя граница НЛО
 
-        if rX_ball >= lX_NLO and b.speed_x > 0:
-            ret["RIGHT"] = True
-        elif rX_ball >= lX_NLO and b.speed_x <= 0:
-            ret["LEFT"] = True
-
-        if dY_ball > uY_NLO and b.speed_y > 0:
-            ret["UP"] = True
-        elif dY_ball > uY_NLO and b.speed_y <= 0:
+        if uY_ball >= uY_NLO:
+            # Нижняя граница
             ret["DOWN"] = True
+        elif dY_ball <= dY_NLO:
+            # Верхняя граница
+            ret["UP"] = True
+
+        if rX_ball <= rX_NLO:
+            # Слева
+            ret["LEFT"] = True
+        elif lX_ball >= lX_NLO:
+            # Справа
+            ret["RIGHT"] = True
+
 
         # Убрать НЛО за левую границу экрана, чтобы удалилась
         a.x = -a.width * 2

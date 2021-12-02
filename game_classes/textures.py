@@ -15,3 +15,9 @@ class Textures:
         # Текустура НЛО
         self.nlo = pygame.image.load('png/nlo.png')
 
+        # Хлопок
+        self.explosion = []
+        self.explosion.append(pygame.image.load('png/explosion01.png'))
+        self.explosion.append(pygame.image.load('png/explosion02.png'))
+        self.explosion.append(pygame.image.load('png/explosion03.png'))
+        self.explosion.append(pygame.image.load('png/explosion04.png'))

@@ -25,6 +25,7 @@ class HitHitEngine:
         -- звёзды;
         -- контроллер."""
         textures = Textures()
+        self.aaa = textures
         self.__player = Player(textures.player)
         self.__ball = Ball(textures.ball, textures.ghost_ball)
         self.__view = View()
@@ -33,7 +34,7 @@ class HitHitEngine:
         self.__stars = Stars(Setup.stars, Setup.screen_width, Setup.screen_height)
         self.__controller = Controller(self.__player)
         self.__nlo = []
-        self.__nlo_engine = NLOEngine(textures.nlo)
+        self.__nlo_engine = NLOEngine(textures.nlo, textures.explosion)
         self.__nlo_engine.create_nlo()
 
         self.game = game
@@ -44,7 +45,7 @@ class HitHitEngine:
         self.__score_text = self.__getScoreText()
         self.__record_text = self.__getRecordText()
         self.__pause_text = None
-        self.__help_text = TextEffect("Для ускорения шара отбейте его площадкой (зажмите ЛКМ). P - Пауза")
+        self.__help_text = TextEffect("Для ускорения шара отбейте его площадкой (зажмите и отпустите ЛКМ). P - Пауза")
 
     @property
     def pause(self):
@@ -68,6 +69,11 @@ class HitHitEngine:
         for nlo in self.__nlo_engine.nlo:
             self.__view.nlo_draw(scene, nlo)
 
+        # Если хлопок
+        if len(self.__nlo_engine.explosions) > 0:
+            for expl in self.__nlo_engine.explosions:
+                self.__view.expl_draw(scene, expl.x, expl.y, expl.texture)
+
         # Текстовые сообщения
         txt = self.__text.getSurfaceText(self.__score_text.text, (255, 100, 100))
         self.__view.text_draw(scene, txt, 20, 20)
@@ -84,7 +90,7 @@ class HitHitEngine:
         else:
             self.__pause_text = None
 
-        if self.current_frame < Setup.FPS * 10:
+        if self.current_frame < Setup.FPS * 20:
             txt = self.__text.getHelpSurfaceText(self.__help_text.text, (100, 200, 200))
             self.__view.text_draw(scene, txt , self.__text.help_surface_text.get_height(), Setup.screen_height - self.__text.help_surface_text.get_height() * 1.5)
             if self.current_frame % (Setup.FPS // 10) == 0:
@@ -96,7 +102,7 @@ class HitHitEngine:
             self.__set_next_symbol_on_text()
 
         if self.current_frame > self.__max_frame:
-            self.current_frame = Setup.FPS * 10
+            self.current_frame = Setup.FPS * 20
 
     def __set_next_symbol_on_text(self):
         self.__help_text.tick()
@@ -184,8 +190,7 @@ class HitHitEngine:
 
         if (data["COUNT"] > 0):
             self.__score_text = self.__getScoreText()
-
-        self.run_collision_result(data)
+            self.run_collision_result(data)
 
         # Проверяет соударение шара и площадки
         self.check_collision_player_and_ball(self.__player.player.rect, self.__ball.ball.rect, delta)
@@ -205,17 +210,12 @@ class HitHitEngine:
         if RIGHT + LEFT + UP + DOWN == 0:
             return False
 
-        if DOWN:
-            if RIGHT:
-                self.__ball.speed_y *= -0.75
-            elif LEFT:
-                self.__ball.speed_x *= -0.5
-        elif UP:
-            self.__ball.speed_x *= -1
-            if LEFT:
-                self.__ball.speed_y *= -0.75
-            elif RIGHT:
-                self.__ball.speed_y *= 0.8
+        if UP:
+            self.__ball.speed_y *= -0.75
+        elif DOWN:
+            self.__ball.speed_y *= -1.1
+        elif RIGHT or LEFT:
+            self.__ball.speed_x *= -0.75
 
         return True
 
